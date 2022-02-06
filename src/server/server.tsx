@@ -17,12 +17,14 @@ server.register(fastifyCompress, {
   global: true,
 })
 
-server.register(fastifyStatic, {
-  root: path.join(__dirname, 'static')
+server.register(fastifyHelmet, {
+  contentSecurityPolicy: true,
+  crossOriginResourcePolicy: true
 })
 
-server.register(fastifyHelmet, {
-  contentSecurityPolicy: true
+
+server.register(fastifyStatic, {
+  root: path.join(__dirname, 'static')
 })
 
 
@@ -42,7 +44,7 @@ server.get('/', async (request, reply) => {
       </head>
       <body>
         <div id="root">${app}</div>
-        <script src="client.js"></script>
+        <script src="client.js" defer></script>
       </body>
     </html>
   `)
