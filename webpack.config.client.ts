@@ -10,21 +10,22 @@ module.exports = {
   mode: 'production',
   output: {
     path: path.resolve(__dirname + '/dist/static'),
-    filename: '[name].[contenthash].js',
+    filename: '[name].js',
     publicPath: '',
   },
   resolve: {
-    extensions: ['.ts', '.tsx', '.js'],
+      modules: ['src', 'node_modules'],
+      extensions: ['.ts', '.tsx', '.js'],
   },
-  target: 'web',
+
   module: {
     rules: [
       {
         test: /\.tsx?$/,
-        loader: 'ts-loader',
-        // options: {
-        //   configFile: 'tsconfig.client.json',
-        // },
+            exclude: /node_modules/,
+            use: {
+                loader: 'babel-loader'
+        },
       },
     ],
   },
