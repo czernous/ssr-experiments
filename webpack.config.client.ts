@@ -2,6 +2,7 @@ import path from "path"
 import { CleanPlugin, HotModuleReplacementPlugin} from "webpack"
 import { WebpackManifestPlugin } from 'webpack-manifest-plugin'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
+import TerserPlugin from 'terser-webpack-plugin'
 
 const mode = process.env.NODE_ENV || 'development';
 
@@ -46,18 +47,16 @@ module.exports = () => {
       mergeDuplicateChunks: true,
       minimize: true,
       minimizer: [
-        (compiler) => ({
-          sourceMap: true,
+        new TerserPlugin({
           parallel: true,
-          cache: true,
           extractComments: true,
+          minify: TerserPlugin.swcMinify,
           terserOptions: {
             ecma: 5,
-            ie8: false,
             compress: true,
-            warnings: true,
+            mangle: true
           },
-        }),
+        })
       ],
 
       moduleIds: 'deterministic',
@@ -68,6 +67,7 @@ module.exports = () => {
       port: 3000,
       hot: true,      
     },
+    devtool:'inline-cheap-module-source-map',
     stats: {
       preset: 'detailed',
       modules: false,

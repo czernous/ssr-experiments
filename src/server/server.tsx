@@ -5,7 +5,8 @@ import fastifyCompress from 'fastify-compress';
 import path from 'path';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server'
-import App from '../client/components/app'
+import {StaticRouter} from 'react-router-dom/server'
+import App from '../client/app'
 
 
 const server = fastify({
@@ -31,30 +32,35 @@ server.register(fastifyStatic, {
 
 
 server.get('/', async (request, reply) => {
-  const app = ReactDOMServer.renderToString(<App />)
+  console.log('REQUESTER URL IS:', request.url);
+
+  const app = ReactDOMServer.renderToString(
+    
+    <StaticRouter location={request.url}>
+      <App />
+    </StaticRouter>
+  )
+  const renderedHtml = `
+  <!DOCTYPE html>
+  <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta http-equiv="X-UA-Compatible" content="ie=edge">
+      <link rel="shortcut icon" type="image/png" href="/images/favicon.png">
+      <title>SSR example</title>
+    </head>
+    <body>
+      <div id="root">${app}</div>
+      <script src="client.js" defer></script>
+    </body>
+  </html>
+`
   reply.type('text/html')
-  return reply.send(`
-    <!DOCTYPE html>
-    <html lang="en">
-      <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <link rel="shortcut icon" type="image/png" href="/images/favicon.png">
-        <title>SSR example</title>
-      </head>
-      <body>
-        <div id="root">${app}</div>
-        <script src="client.js" defer></script>
-      </body>
-    </html>
-  `)
+  return reply.send(renderedHtml)
 });
 
 
-server.get('/ping', async (request, reply) => {
-  return 'pong\n'
-})
 
 server.listen(8080, (err, address) => {
   if (err) {
