@@ -19,7 +19,8 @@ server.register(fastifyCompress, {
 
 server.register(fastifyHelmet, {
   contentSecurityPolicy: true,
-  crossOriginResourcePolicy: true
+  crossOriginResourcePolicy: true,
+  xssFilter: true
 })
 
 
