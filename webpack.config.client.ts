@@ -2,6 +2,9 @@ import path from "path"
 import { CleanPlugin, HotModuleReplacementPlugin} from "webpack"
 import { WebpackManifestPlugin } from 'webpack-manifest-plugin'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
+import TerserPlugin from 'terser-webpack-plugin'
+import CompressionPlugin from 'compression-webpack-plugin'
+import  zlib  from "zlib"
 
 const mode = process.env.NODE_ENV || 'development';
 
@@ -29,7 +32,7 @@ module.exports = () => {
           test: /\.tsx?$/,
               exclude: /node_modules/,
               use: {
-                  loader: 'babel-loader'
+                loader: 'babel-loader',
           },
         },
       ],
@@ -44,20 +47,18 @@ module.exports = () => {
     optimization: {
       mangleWasmImports: true,
       mergeDuplicateChunks: true,
-      minimize: true,
+      minimize: mode !== 'production' ? false : true,
       minimizer: [
-        (compiler) => ({
-          sourceMap: true,
+        new TerserPlugin({
           parallel: true,
-          cache: true,
           extractComments: true,
+          minify: TerserPlugin.swcMinify,
           terserOptions: {
             ecma: 5,
-            ie8: false,
             compress: true,
-            warnings: true,
+            mangle: true
           },
-        }),
+        })
       ],
 
       moduleIds: 'deterministic',
@@ -66,7 +67,7 @@ module.exports = () => {
     devServer: {
       compress: true,
       port: 3000,
-      hot: true,      
+    
     },
     stats: {
       preset: 'detailed',

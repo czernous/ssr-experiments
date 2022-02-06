@@ -3,8 +3,7 @@ import fastifyStatic from 'fastify-static';
 import fastifyHelmet from 'fastify-helmet';
 import fastifyCompress from 'fastify-compress';
 import path from 'path';
-import React from 'react';
-import ReactDOMServer from 'react-dom/server'
+import {renderToString} from 'inferno-server'
 import App from '../client/components/app'
 
 
@@ -31,7 +30,7 @@ server.register(fastifyStatic, {
 
 
 server.get('/', async (request, reply) => {
-  const app = ReactDOMServer.renderToString(<App />)
+  const app = renderToString(<App />)
   reply.type('text/html')
   return reply.send(`
     <!DOCTYPE html>
@@ -50,11 +49,6 @@ server.get('/', async (request, reply) => {
     </html>
   `)
 });
-
-
-server.get('/ping', async (request, reply) => {
-  return 'pong\n'
-})
 
 server.listen(8080, (err, address) => {
   if (err) {

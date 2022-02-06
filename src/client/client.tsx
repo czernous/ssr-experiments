@@ -1,5 +1,7 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
-import  App  from './components/app'
+import { Component } from "inferno";
+import { hydrate } from 'inferno-hydrate';
+import App from './components/app'
 
-ReactDOM.hydrate(<App />, document.getElementById('root'))
+const wrapper = (<App />)
+
+hydrate(wrapper, document.getElementById('root'))

@@ -1,6 +1,9 @@
 {
     "compilerOptions": {
-      "jsx": "react",
+      "jsx": "preserve",
+      "types": [
+        "inferno"
+      ],
       "module": "commonjs",
       "esModuleInterop": true,
       "target": "es6",
