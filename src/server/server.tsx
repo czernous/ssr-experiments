@@ -4,7 +4,9 @@ import fastifyHelmet from 'fastify-helmet';
 import fastifyCompress from 'fastify-compress';
 import path from 'path';
 import {renderToString} from 'inferno-server'
-import App from '../client/components/app'
+import { StaticRouter } from 'inferno-router';
+import Html from '../client/components/Html';
+import routes from '../client/routes';
 
 
 const server = fastify({
@@ -29,26 +31,31 @@ server.register(fastifyStatic, {
 
 
 
-server.get('/', async (request, reply) => {
-  const app = renderToString(<App />)
-  reply.type('text/html')
-  return reply.send(`
-    <!DOCTYPE html>
-    <html lang="en">
-      <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <link rel="shortcut icon" type="image/png" href="/images/favicon.png">
-        <title>SSR example</title>
-      </head>
-      <body>
-        <div id="root">${app}</div>
-        <script src="client.js" defer></script>
-      </body>
-    </html>
-  `)
-});
+routes.forEach(route => server.route({
+  method: 'GET',
+  url: route.route,
+  schema: {
+    response: {
+      200: {
+        type: 'string'
+      }
+    }
+  },
+  handler: async (request, reply) => {
+    let context: any = {}
+    const content = renderToString(
+      <StaticRouter location={request.url} context={context}>
+        <Html children={''} />
+      </StaticRouter>
+    )
+    reply.type('text/html')
+    if (context.url) {
+      return reply.redirect(context.url);
+    }
+    reply.send('<!DOCTYPE html>\n' + content);
+  
+  },
+}))
 
 server.listen(8080, (err, address) => {
   if (err) {

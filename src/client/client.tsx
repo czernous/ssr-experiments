@@ -1,7 +1,7 @@
 import { Component } from "inferno";
 import { hydrate } from 'inferno-hydrate';
-import App from './components/app'
+import { BrowserRouter } from "inferno-router";
+import App from './app'
 
-const wrapper = (<App />)
 
-hydrate(wrapper, document.getElementById('root'))
+hydrate(<BrowserRouter><App /></BrowserRouter>, document.getElementById('root'))

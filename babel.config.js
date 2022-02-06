@@ -3,5 +3,9 @@ module.exports = {
         "@babel/preset-env",
         "@babel/preset-typescript"
     ],
-    "plugins": [["babel-plugin-inferno", {"imports": true}]]
+    "plugins": [
+        [
+            "babel-plugin-inferno", { "imports": true },
+        ],
+    ]
 }

@@ -3,8 +3,6 @@ import { CleanPlugin, HotModuleReplacementPlugin} from "webpack"
 import { WebpackManifestPlugin } from 'webpack-manifest-plugin'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
 import TerserPlugin from 'terser-webpack-plugin'
-import CompressionPlugin from 'compression-webpack-plugin'
-import  zlib  from "zlib"
 
 const mode = process.env.NODE_ENV || 'development';
 
@@ -42,7 +40,7 @@ module.exports = () => {
       new WebpackManifestPlugin({}),
       mode !== 'production' ? new HotModuleReplacementPlugin() : emptyFunc,
       //mode === 'production' ? new CompressionPlugin() : emptyFunc,
-      mode !== 'production' ? new HtmlWebpackPlugin({template: './dev-server-entry/index.html'}) : emptyFunc
+      mode !== 'production' ? new HtmlWebpackPlugin({ template: './dev-server-entry/index.html' }) : emptyFunc,
     ],
     optimization: {
       mangleWasmImports: true,
@@ -67,6 +65,7 @@ module.exports = () => {
     devServer: {
       compress: true,
       port: 3000,
+      historyApiFallback: true,
     
     },
     stats: {
