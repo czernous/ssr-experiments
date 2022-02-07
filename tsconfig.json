@@ -3,10 +3,16 @@
       "jsx": "react",
       "module": "commonjs",
       "esModuleInterop": true,
+      "skipLibCheck": true, // only check types we refer to from our code
+      "forceConsistentCasingInFileNames": true, // prevents cross-OS problems
+      "resolveJsonModule": true, // enable import of JSON files
       "target": "es6",
       "moduleResolution": "Node",
       "sourceMap": true,
-      "outDir": "dist"
+      "outDir": "dist",
+      "strict": true,
+      "strictNullChecks": true,
+      "noImplicitAny": true
     },
     "lib": ["es2015"]
   }

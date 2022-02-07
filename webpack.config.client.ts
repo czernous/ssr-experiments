@@ -3,6 +3,7 @@ import { CleanPlugin, HotModuleReplacementPlugin} from "webpack"
 import { WebpackManifestPlugin } from 'webpack-manifest-plugin'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
 import TerserPlugin from 'terser-webpack-plugin'
+import LoadablePlugin from '@loadable/webpack-plugin'
 
 const mode = process.env.NODE_ENV || 'development';
 
@@ -40,7 +41,8 @@ module.exports = () => {
       new WebpackManifestPlugin({}),
       mode !== 'production' ? new HotModuleReplacementPlugin() : emptyFunc,
       //mode === 'production' ? new CompressionPlugin() : emptyFunc,
-      mode !== 'production' ? new HtmlWebpackPlugin({template: './dev-server-entry/index.html'}) : emptyFunc
+      mode !== 'production' ? new HtmlWebpackPlugin({ template: './dev-server-entry/index.html' }) : emptyFunc,
+      new LoadablePlugin()
     ],
     optimization: {
       mangleWasmImports: true,

@@ -23,10 +23,26 @@ module.exports = {
     rules: [
       {
         test: /\.tsx?$/,
-        loader: 'ts-loader',
-        options: {
-          configFile: 'tsconfig.server.json',
-        },
+        use: [
+
+          {
+            loader: 'babel-loader',
+            options: {
+              cacheDirectory: true,
+              presets: [["@babel/preset-env", { targets: { node: "current" } }]],
+              plugins: [
+                "@loadable/babel-plugin",
+              ]
+            }
+          },
+          // {
+          //   loader: 'ts-loader',
+          //   options: {
+          //     configFile: 'tsconfig.server.json',
+          //   },
+          // },
+        ],
+        
       },
     ],
   },
