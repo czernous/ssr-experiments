@@ -1,4 +1,4 @@
-import fastify from 'fastify'
+import fastify, { FastifyRequest } from 'fastify'
 import fastifyStatic from 'fastify-static';
 import fastifyHelmet from 'fastify-helmet';
 import fastifyCompress from 'fastify-compress';
@@ -43,9 +43,15 @@ routes.forEach(route => server.route({
   },
   handler: async (request, reply) => {
     let context: any = {}
+    const getRequestedPage = (request: FastifyRequest) => {
+      const requestedPage = request.url.replace('/', '');
+      return requestedPage.length === 0 ? 'home' : requestedPage
+    }
+    const page = getRequestedPage(request);
+    console.log("=== Requesting %s page ===", page)
     const content = renderToString(
       <StaticRouter location={request.url} context={context}>
-        <Html children={''} />
+        <Html children={''} componentName={`pages-${page}`}/>
       </StaticRouter>
     )
     reply.type('text/html')

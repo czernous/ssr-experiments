@@ -1,6 +1,13 @@
-import { Props } from "inferno";
+import { InfernoNode, Props } from "inferno";
 
-const Html = ({children}: Props<{}>): JSX.Element => {
+
+interface HtmlProps extends Props<{}> {
+  children: InfernoNode,
+  componentName: string
+}
+
+
+const Html = ({ children, componentName }: HtmlProps): JSX.Element => {
   return (
     <html>
       <head>
@@ -8,8 +15,9 @@ const Html = ({children}: Props<{}>): JSX.Element => {
       </head>
       <body>
         <div id="root">{children}</div>
-          </body>
-          <script src="client.js" defer></script>
+      </body>
+      <script src="client.js" defer></script>
+      <script src={`${componentName}.js`}></script>
     </html>
   );
 };

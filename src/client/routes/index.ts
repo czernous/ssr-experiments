@@ -1,13 +1,19 @@
 import Home from '../pages/Home'
 import About from '../pages/About'
+import {IRoute} from '../../interfaces/route-props'
+//@ts-ignore
+import asyncComponent from 'inferno-async-component';
 
-export default [
+
+const routes: IRoute[] = [
     {
         route: "/",
-        component: Home
+        component: asyncComponent(() => import('../pages/Home'  /* webpackChunkName: "pages-home" */))
     },
     {
         route: "/about",
-        component: About
+        component: asyncComponent(() => import('../pages/About' /* webpackChunkName: "pages-about" */))
     },
-]
+];
+
+export default routes;

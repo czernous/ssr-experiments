@@ -1,4 +1,3 @@
-import { Component } from "inferno";
 import { hydrate } from 'inferno-hydrate';
 import { BrowserRouter } from "inferno-router";
 import App from './app'

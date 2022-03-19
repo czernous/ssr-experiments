@@ -1,11 +1,12 @@
 import { Link, Route, Switch } from "inferno-router"
-import About from "./pages/About"
-import Home from "./pages/Home"
+import asyncComponent from 'inferno-async-component';
+import routes from './routes'
+import { IRoute } from "../interfaces/route-props";
 
+const AsyncHome = asyncComponent(() => import('./pages/Home'  /* webpackChunkName: "pages-home" */));
+const AsyncAbout = asyncComponent(() => import('./pages/About' /* webpackChunkName: "pages-about" */));
 
 const App = () => {
-  
-
   return (
     <div>
     <ul>
@@ -14,8 +15,12 @@ const App = () => {
     </ul>
     <hr />
     <Switch>
-      <Route exact path="/" component={Home} />
-      <Route exact path="/about" component={About} />
+      <Route exact path="/" component={AsyncHome} />
+        <Route exact path="/about" component={AsyncAbout} />
+        {
+          routes.map((route: IRoute): JSX.Element => 
+            <Route path={route.route} component={route.component} />)
+        }
     </Switch>
   </div>
   
