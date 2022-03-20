@@ -8,5 +8,5 @@ export const hydrateHead = (pageAction: string) => {
     const action: Action = { type: pageAction };
     store.dispatch(action);
     const finalState = store.getState();
-    hydrate(<Head data={finalState} />, head);
+    if (head) hydrate(<Head data={finalState} />, head);
 };

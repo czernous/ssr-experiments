@@ -15,7 +15,7 @@ About.defaultHooks = {
     },
 };
 
-const mapStateToProps = (state) => {
+const mapStateToProps = (state: never) => {
     return state;
 };
 

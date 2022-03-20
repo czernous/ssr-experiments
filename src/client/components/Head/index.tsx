@@ -1,10 +1,18 @@
 const APP_NAME = 'SAMPLE INFERNO SSR';
 const APP_TITLE_SEPARATOR = ' | ';
 
-const MetaTag = (props) => <meta {...props} />;
-const LinkTag = (props) => <link {...props} />;
+const MetaTag = (props: Record<string, unknown>) => <meta {...props} />;
+const LinkTag = (props: Record<string, unknown>) => <link {...props} />;
 
-const Head = (state): JSX.Element => {
+const Head = (state: {
+    data: {
+        metaData: {
+            pageTitle: string;
+            metaDescription: unknown;
+            metaKeywords: unknown;
+        };
+    };
+}): JSX.Element => {
     return (
         <>
             <MetaTag charset='UTF-8' />
