@@ -2,9 +2,15 @@ import { connect } from "inferno-redux";
 import { hydrateHead } from "../helpers";
 
 
-const Home = (state) => {
-  console.log(state.metaData)
-  return <div>HOME PAGE {state?.metaData?.pageTitle}</div>;
+const Home = (state, props) => {
+  console.log(state, props)
+  return (
+    <>
+      <div>HOME PAGE {state?.metaData?.pageTitle}</div>
+      {/* simple demo of how to dispatch actions from components */}
+      <button onClick={() => props.store.dispatch({type: 'GO_ABOUT'})}>GO ABOUT</button>
+    </>
+  );
 };
 
 Home.defaultHooks = {
@@ -13,11 +19,15 @@ Home.defaultHooks = {
   }
 }
 
-const mapStateToProps = state => {
-  console.log(state)
-  const { pageTitle, metaDescription, metaKeywords } = state;
-  return state
+const mapStateToProps = (state) => state
+
+
+const mapDispatchToProps = dispatch => {
+  return {
+    dispatch
+  }
 }
 
 
-export default connect(mapStateToProps)(Home);
+
+export default connect(mapStateToProps, mapDispatchToProps)(Home);
