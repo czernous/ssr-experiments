@@ -1,5 +1,4 @@
-import { IPageMetaData } from "./page-metadata";
-
+import { IPageMetaData } from './page-metadata';
 
 export interface IRoute {
     route: string;
@@ -7,5 +6,5 @@ export interface IRoute {
 }
 
 export interface IRouteProp extends IRoute {
-    metaData: IPageMetaData
+    metaData: IPageMetaData;
 }
