@@ -1,18 +1,28 @@
-import Home from '../pages/Home'
-import About from '../pages/About'
-import {IRoute} from '../../interfaces/route-props'
+import {IRouteProp} from '../../interfaces/route-props'
 //@ts-ignore
 import asyncComponent from 'inferno-async-component';
 
 
-const routes: IRoute[] = [
+
+
+const routes: IRouteProp[] = [
     {
         route: "/",
-        component: asyncComponent(() => import('../pages/Home'  /* webpackChunkName: "pages-home" */))
+        component: asyncComponent(() => import('../pages/Home'  /* webpackChunkName: "pages-home" */)),
+        metaData: {
+            pageTitle: 'Home',
+            metaDescription: 'cool website for you',
+            metaKeywords: '',
+        }
     },
     {
         route: "/about",
-        component: asyncComponent(() => import('../pages/About' /* webpackChunkName: "pages-about" */))
+        component: asyncComponent(() => import('../pages/About' /* webpackChunkName: "pages-about" */)),
+        metaData: {
+            pageTitle: 'About',
+            metaDescription: 'This is an about page',
+            metaKeywords: 'srr, inferno, fastify',
+        }
     },
 ];
 

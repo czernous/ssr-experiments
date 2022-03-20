@@ -3,10 +3,15 @@ import fastifyStatic from 'fastify-static';
 import fastifyHelmet from 'fastify-helmet';
 import fastifyCompress from 'fastify-compress';
 import path from 'path';
-import {renderToString} from 'inferno-server'
-import { StaticRouter } from 'inferno-router';
-import Html from '../client/components/Html';
 import routes from '../client/routes';
+import { Provider } from 'inferno-redux';
+import { Action, createStore } from 'redux';
+import { renderToString } from 'inferno-server'
+import metaReducer from '../client/reducers/metaReducer';
+import { StaticRouter } from 'inferno-router';
+import reducers from '../client/reducers';
+import { renderFullPage } from './helpers';
+
 
 
 const server = fastify({
@@ -14,12 +19,13 @@ const server = fastify({
 
 })
 
+
 server.register(fastifyCompress, {
   global: true,
 })
 
 server.register(fastifyHelmet, {
-  contentSecurityPolicy: true,
+  contentSecurityPolicy: false,
   crossOriginResourcePolicy: true,
   xssFilter: true
 })
@@ -43,22 +49,34 @@ routes.forEach(route => server.route({
   },
   handler: async (request, reply) => {
     let context: any = {}
-    const getRequestedPage = (request: FastifyRequest) => {
-      const requestedPage = request.url.replace('/', '');
-      return requestedPage.length === 0 ? 'home' : requestedPage
+
+    const getPageName = (request: FastifyRequest) => {
+      const route = routes.find(r => r.route === request.url);
+      const name = route?.route === "/" ? 'home' : route?.route.replace('/', '');
+      return name;
     }
-    const page = getRequestedPage(request);
-    console.log("=== Requesting %s page ===", page)
+    const page = getPageName(request)
+    console.log("=== Requesting %s page ===", page);
+
+    
+    const store = createStore(reducers, {metaData: {pageTitle: 'SEVERSIDE', metaDescription: '', metaKeywords: ''}});
+    const action: Action = { type: `GO_${getPageName(request)?.toUpperCase()}`}
+    const updatedState = store.dispatch(action);
+   
     const content = renderToString(
-      <StaticRouter location={request.url} context={context}>
-        <Html children={''} componentName={`pages-${page}`}/>
-      </StaticRouter>
+      <Provider store={store}>
+        <StaticRouter location={request.url} context={context}>
+        </StaticRouter>
+      </Provider>
     )
+
+
+    const finalState = store.getState()
     reply.type('text/html')
     if (context.url) {
       return reply.redirect(context.url);
     }
-    reply.send('<!DOCTYPE html>\n' + content);
+    reply.send(renderFullPage(content, finalState));
   
   },
 }))
