@@ -1,7 +1,7 @@
-export const renderFullPage = (html: string, preloadedState: any) => {
+export const renderFullPage = (html: string, preloadedState: unknown) => {
     return `
       <!doctype html>
-      <html>
+      <html lang="en">
         <body>
           <div id="root">${html}</div>
           <script>
