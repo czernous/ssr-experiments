@@ -7,7 +7,6 @@ import routes from '../client/routes';
 import { Provider } from 'inferno-redux';
 import { Action, createStore } from 'redux';
 import { renderToString } from 'inferno-server'
-import metaReducer from '../client/reducers/metaReducer';
 import { StaticRouter } from 'inferno-router';
 import reducers from '../client/reducers';
 import { renderFullPage } from './helpers';
@@ -25,7 +24,13 @@ server.register(fastifyCompress, {
 })
 
 server.register(fastifyHelmet, {
-  contentSecurityPolicy: false,
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: [`'self'`],
+      scriptSrc: [`'self'`, `'unsafe-inline'`],
+      styleSrc: [`'self'`]
+    }
+  },
   crossOriginResourcePolicy: true,
   xssFilter: true
 })
