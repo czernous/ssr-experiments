@@ -75,7 +75,7 @@ routes.forEach(route => server.route({
   ` 
     reply.type('text/html')
     
-    return reply.send(renderedHtml)
+    return reply.send("<!DOCTYPE html>" + renderedHtml)
   },
 }))
 

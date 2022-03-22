@@ -8,16 +8,24 @@ const About = loadable(() => import('./pages/About'))
 
 
 const App:React.FC = () => (
-    <Routes >
- 
-            <Route path="/" element={<Home/>} />
-            <Route path="about" element={<About />} />
-     
-    </Routes>
     
+
+        
+        <>
+            <ul>
+                <li>
+                    <Link to={'/'}>Home</Link>
+                </li>
+                <li>
+                    <Link to={'/about'}>About</Link>
+                </li>
+            </ul>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/about" element={<About />} />
+          </Routes>
+        </>
 )
-
-
 
 
 export default App
