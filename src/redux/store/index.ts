@@ -1,7 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit'
 import rootReducer from '../reducers/rootReducer';
 
-export default function createStore({initialState}: any = {}) {
+export function createStore({initialState}: any = {}) {
     const store = configureStore({
         reducer: rootReducer,
         preloadedState: initialState,

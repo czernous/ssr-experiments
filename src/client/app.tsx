@@ -1,13 +1,11 @@
 import loadable from '@loadable/component'
 import React from 'react'
 import { Link, Outlet, Route, Router, Routes } from 'react-router-dom'
+import routes from './routes'
+import Home from './pages/Home'
 
 
-const Home  = loadable(() => import('./pages/Home'))
-const About = loadable(() => import('./pages/About'))
-
-
-const App:React.FC = () => (
+const App = () => (
     
 
         
@@ -20,9 +18,15 @@ const App:React.FC = () => (
                     <Link to={'/about'}>About</Link>
                 </li>
             </ul>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
+    <Routes>
+            
+     
+      {routes.map(({ ...routeProps }) => {
+        const C = () => <routeProps.element/>
+        return (
+          <Route key={routeProps.path} path={routeProps.path} element={<C/> }/>
+        )
+      })}
           </Routes>
         </>
 )

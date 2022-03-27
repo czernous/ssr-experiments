@@ -10,7 +10,7 @@ import App from '../client/app'
 import routes from '../client/routes';
 import { ChunkExtractor } from '@loadable/server'
 import { Provider } from 'react-redux';
-import  createStore  from '../redux/store';
+import  { createStore }  from '../redux/store';
 
 
 
@@ -42,7 +42,7 @@ server.register(fastifyStatic, {
 
 routes.forEach(route => server.route({
   method: 'GET',
-  url: route.route,
+  url: route.path,
   schema: {
     response: {
       200: {
