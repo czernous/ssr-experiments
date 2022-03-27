@@ -10,6 +10,7 @@ import App from '../client/app'
 import routes from '../client/routes';
 import { ChunkExtractor } from '@loadable/server'
 import { Provider } from 'react-redux';
+import  createStore  from '../redux/store';
 
 
 
@@ -50,7 +51,7 @@ routes.forEach(route => server.route({
     }
   },
   handler: async (request, reply) => {
-    const store = createStore(()=>{}); //add real reducer
+    const store = createStore(); //add real reducer
     
     const app = ReactDOMServer.renderToString(
     
