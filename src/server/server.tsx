@@ -9,6 +9,7 @@ import {StaticRouter} from 'react-router-dom/server'
 import App from '../client/app'
 import routes from '../client/routes';
 import { ChunkExtractor } from '@loadable/server'
+import { Provider } from 'react-redux';
 
 
 
@@ -49,14 +50,19 @@ routes.forEach(route => server.route({
     }
   },
   handler: async (request, reply) => {
+    const store = createStore(()=>{}); //add real reducer
+    
     const app = ReactDOMServer.renderToString(
     
       extractor.collectChunks(
+        <Provider store={store}>
         <StaticRouter location={request.url}>
           <App />
-        </StaticRouter>
+          </StaticRouter>
+          </Provider>
       )
     )
+    const state = store.getState()
     const renderedHtml = `
     <!DOCTYPE html>
     <html lang="en">
@@ -69,6 +75,9 @@ routes.forEach(route => server.route({
       </head>
       <body>
         <div id="root">${app}</div>
+        <script>
+                    window.__STATE__ = ${JSON.stringify(state)}
+                  </script>
         <script src="client.js" defer></script>
       </body>
     </html>
