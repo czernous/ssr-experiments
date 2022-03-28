@@ -1,12 +1,21 @@
-import { Action } from "@reduxjs/toolkit"
+/* eslint-disable no-unused-vars */
+import { createSlice } from "@reduxjs/toolkit";
 
-export function counterReducer(state = { value: 0 }, action: Action) {
-    switch (action.type) {
-      case 'counter/incremented':
-        return { value: state.value + 1 }
-      case 'counter/decremented':
-        return { value: state.value - 1 }
-      default:
-        return state
-    }
-  }
+const counterSlice = createSlice({
+  name: "counter",
+  initialState: 0,
+  reducers: {
+    increment(state, action) {
+      return state + 1;
+    },
+
+    decrement(state, action) {
+      return state - 1;
+    },
+  },
+});
+
+const { actions, reducer } = counterSlice;
+export const { increment, decrement } = actions;
+
+export default reducer;

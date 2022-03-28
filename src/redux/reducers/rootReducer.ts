@@ -1,9 +1,10 @@
-import { combineReducers } from '@reduxjs/toolkit';
+import { combineReducers } from "@reduxjs/toolkit";
 
-import {counterReducer} from './counter';
+import counterSlice from "./counter";
 
 const rootReducer = combineReducers({
-  beers: counterReducer,
+  counter: counterSlice,
 });
 
+export type RootState = ReturnType<typeof rootReducer>;
 export default rootReducer;

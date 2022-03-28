@@ -1,21 +1,22 @@
-import nodeExternals from 'webpack-node-externals'
-import path from 'path'
+/* eslint-disable import/no-extraneous-dependencies */
+import nodeExternals from "webpack-node-externals";
+import path from "path";
 
 module.exports = {
-  name: 'server',
+  name: "server",
   entry: {
-    server: path.resolve(__dirname, 'src/server/server.tsx'),
+    server: path.resolve(__dirname, "src/server/server.tsx"),
   },
-  mode: 'production',
+  mode: "production",
   output: {
-    path: path.resolve(__dirname, 'dist'),
-    filename: '[name].js',
+    path: path.resolve(__dirname, "dist"),
+    filename: "[name].js",
   },
   resolve: {
-    extensions: ['.ts', '.tsx'],
+    extensions: [".ts", ".tsx"],
   },
   externals: [nodeExternals()],
-  target: 'node',
+  target: "node",
   node: {
     __dirname: false,
   },
@@ -24,17 +25,17 @@ module.exports = {
       {
         test: /\.tsx?$/,
         use: [
-
           {
-            loader: 'babel-loader',
+            loader: "babel-loader",
             options: {
               cacheDirectory: true,
-              presets: [["@babel/preset-env", { targets: { node: "current" } }]],
-              plugins: [
-                "@loadable/babel-plugin",
-              ]
-            }
+              presets: [
+                ["@babel/preset-env", { targets: { node: "current" } }],
+              ],
+              plugins: ["@loadable/babel-plugin"],
+            },
           },
+
           // {
           //   loader: 'ts-loader',
           //   options: {
@@ -42,8 +43,11 @@ module.exports = {
           //   },
           // },
         ],
-        
+      },
+      {
+        test: /\.json$/,
+        type: "asset/source",
       },
     ],
   },
-}
+};

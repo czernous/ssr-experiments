@@ -1,5 +1,24 @@
-import React from 'react'
+import React from "react";
+import { connect } from "react-redux";
+import { decrement, increment } from "../../../redux/reducers/counter";
 
-const About: React.FC = () => <h1>Hello from SSR</h1>
+function About({ counter }: any) {
+  return (
+    <div>
+      <h1>
+        Hello from SSR
+        {counter}
+      </h1>
+      <p />
+    </div>
+  );
+}
 
-export default About
+const mapState = (state: any) => state;
+
+const actionCreators = {
+  increment,
+  decrement,
+};
+
+export default connect(mapState, actionCreators)(About);
