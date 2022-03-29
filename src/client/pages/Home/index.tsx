@@ -1,27 +1,23 @@
 /* eslint-disable no-shadow */
 import React from "react";
-import { connect } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { decrement, increment } from "../../../redux/reducers/counter";
+import { RootState } from "../../../redux/reducers/rootReducer";
 
-const actionCreators = {
-  increment,
-  decrement,
-};
-
-function Home({ counter, increment, decrement }: any) {
+function Home() {
+  const count = useSelector((state: RootState) => state.counter.value);
+  const dispatch = useDispatch();
   return (
     <div>
-      <p>counter: {counter}</p>
-      <button type="button" onClick={() => increment()}>
+      <p>counter: {count}</p>
+      <button type="button" onClick={() => dispatch(increment())}>
         increment
       </button>
-      <button type="button" onClick={() => decrement()}>
+      <button type="button" onClick={() => dispatch(decrement())}>
         decrement
       </button>
     </div>
   );
 }
 
-const mapState = (state: any) => state;
-
-export default connect(mapState, actionCreators)(Home);
+export default Home;

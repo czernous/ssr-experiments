@@ -1,21 +1,33 @@
+/* eslint-disable no-param-reassign */
+/* eslint-disable no-return-assign */
 /* eslint-disable no-unused-vars */
 import { createSlice } from "@reduxjs/toolkit";
+import { RootState } from "../rootReducer";
+
+export interface CounterState {
+  value: number;
+}
+
+const initialState: CounterState = {
+  value: 0,
+};
 
 const counterSlice = createSlice({
   name: "counter",
-  initialState: 0,
+  initialState,
   reducers: {
-    increment(state, action) {
-      return state + 1;
+    increment: (state) => {
+      state.value += 1;
     },
 
-    decrement(state, action) {
-      return state - 1;
+    decrement: (state) => {
+      state.value -= 1;
     },
   },
 });
 
-const { actions, reducer } = counterSlice;
-export const { increment, decrement } = actions;
+export const { increment, decrement } = counterSlice.actions;
 
-export default reducer;
+export const selectCount = (state: RootState) => state.counter.value;
+
+export default counterSlice.reducer;

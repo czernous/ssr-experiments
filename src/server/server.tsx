@@ -25,7 +25,13 @@ server.register(fastifyCompress, {
 });
 
 server.register(fastifyHelmet, {
-  contentSecurityPolicy: true,
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: [`'self'`],
+      scriptSrc: [`'self'`, `'unsafe-inline'`],
+      styleSrc: [`'self'`, `'unsafe-inline'`],
+    },
+  },
   crossOriginResourcePolicy: true,
   xssFilter: true,
 });

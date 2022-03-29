@@ -1,24 +1,15 @@
 import React from "react";
-import { connect } from "react-redux";
-import { decrement, increment } from "../../../redux/reducers/counter";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../redux/reducers/rootReducer";
 
-function About({ counter }: any) {
+function About() {
+  const count = useSelector((state: RootState) => state.counter.value);
   return (
     <div>
-      <h1>
-        Hello from SSR
-        {counter}
-      </h1>
-      <p />
+      <h1>Hello from SSR</h1>
+      <p>count: {count}</p>
     </div>
   );
 }
 
-const mapState = (state: any) => state;
-
-const actionCreators = {
-  increment,
-  decrement,
-};
-
-export default connect(mapState, actionCreators)(About);
+export default About;
