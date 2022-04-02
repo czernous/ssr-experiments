@@ -1,9 +1,10 @@
-import loadable from "@loadable/component";
+// import loadable from "@loadable/component";
+import React from "react";
 
-const Home = loadable(
+const Home = React.lazy(
   () => import(/* webpackChunkName: "pages-Home" */ "../pages/Home")
 );
-const About = loadable(
+const About = React.lazy(
   () => import(/* webpackChunkName: "pages-About" */ "../pages/About")
 );
 
