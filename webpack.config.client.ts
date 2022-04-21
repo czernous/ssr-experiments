@@ -18,7 +18,7 @@ module.exports = () => ({
   },
   output: {
     path: path.resolve(`${__dirname}/dist/static`),
-    filename: "[name].js",
+    filename: "[name].[contenthash].js",
   },
   resolve: {
     modules: ["src", "node_modules"],
