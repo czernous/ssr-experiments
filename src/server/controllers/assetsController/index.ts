@@ -4,12 +4,7 @@ import http from "http";
 import path from "path";
 import fs from "fs";
 import { findFileByPartialName, staticFolder } from "../../utils";
-import { ServerData } from "../../interfaces";
-
-interface Header {
-  key: string;
-  value: string;
-}
+import { Header, ServerData } from "../../interfaces";
 
 class AssetsController {
   static _instance: AssetsController;

@@ -6,3 +6,8 @@ export interface ServerData {
   headers: http.IncomingHttpHeaders;
   method?: string;
 }
+
+export interface Header {
+  key: string;
+  value: string;
+}
