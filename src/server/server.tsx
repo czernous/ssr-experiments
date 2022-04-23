@@ -10,16 +10,12 @@ import { StringDecoder } from "string_decoder";
 import App from "../client/app";
 import routes from "../client/routes";
 import { createStore } from "../redux/store";
+import { findFileByPartialName } from "./utils";
+import AssetsController from "./controllers/assetsController";
+import { UrlObject } from "url";
+import { ServerData } from "./interfaces";
 
 const PORT = process.env.PORT || 8000;
-
-const staticFolder = path.join(__dirname, "static");
-
-const findFileByPartialName = (name: string): string => {
-  const files = fs.readdirSync(staticFolder);
-  const file = files.find((f) => f.includes(name));
-  return file ? path.join(staticFolder, file) : "";
-};
 
 const parseJsonToObject = function (str) {
   try {
@@ -33,7 +29,10 @@ const parseJsonToObject = function (str) {
 async function handler(req, res) {
   let didError = false;
   const store = createStore(); // add real reducer
+  const client = findFileByPartialName("client");
+  console.log(client);
 
+  const state = store.getState();
   const stream = renderToPipeableStream(
     <Provider store={store}>
       <StaticRouter location={req.url}>
@@ -41,13 +40,14 @@ async function handler(req, res) {
       </StaticRouter>
     </Provider>,
     {
-      bootstrapScripts: [findFileByPartialName("client")],
+      bootstrapScripts: [client],
       onShellReady() {
         // The content above all Suspense boundaries is ready.
         // If something errored before we started streaming, we set the error code appropriately.
 
         res.statusCode = didError ? 500 : 200;
         res.setHeader("Content-type", "text/html");
+        res.write('<div id="root">');
         stream.pipe(res);
       },
       onShellError(error) {
@@ -73,6 +73,7 @@ async function handler(req, res) {
       },
     }
   );
+
   //   const store = createStore(); // add real reducer
 
   //   const app = ReactDOMServer.renderToString(
@@ -124,9 +125,8 @@ const server = http.createServer((req, res) => {
   const parsedUrl = new URL(req.url!.toString(), "http://localhost:8000");
 
   // Get the path
-  const path = parsedUrl.pathname;
-  const trimmedPath = path.replace(/^\/+|\/+$/g, "");
-  console.log(path);
+  const { pathname } = parsedUrl;
+  const trimmedPath = pathname.replace(/^\/+|\/+$/g, "");
 
   // Get the query string as an object
   const queryStringObject = parsedUrl.searchParams;
@@ -141,7 +141,44 @@ const server = http.createServer((req, res) => {
   const decoder = new StringDecoder("utf-8");
   const route = routes.find((r) => r.path === req.url);
 
-  handler(req, res);
+  req.on("data", () => {
+    console.log("got some data");
+    // if no data is passed we don't see this messagee
+    // but we still need the handler so the "end" function works.
+  });
+  req.on("end", () => {
+    // request part is finished... we can send a response now
+    console.log("send a response");
+    // we will use the standardized version of the path
+
+    const data: ServerData = {
+      trimmedPath,
+      queryString: queryStringObject,
+      headers,
+      method,
+    };
+
+    console.log(data);
+
+    const assetsController = new AssetsController(req, res, data);
+
+    // pass data incase we need info about the request
+    // pass the response object because router is outside our scope
+    if (req.url === route?.path) {
+      handler(req, res);
+    } else if (
+      req.url?.includes(".br") ||
+      req.url?.includes("client" || /\.(css|html|svg|jpeg|jpg|gif)$/)
+    ) {
+      assetsController.getCompressedAsset();
+    } else if (req.url?.includes(".js") && !req.url?.includes("client")) {
+      assetsController.getJavaScriptAsset();
+    } else {
+      res.statusCode = 404;
+      res.setHeader("Content-Type", "text/html");
+      res.end("<h1>404 Page not found</h1>");
+    }
+  });
 });
 
 server.listen(PORT, () => {

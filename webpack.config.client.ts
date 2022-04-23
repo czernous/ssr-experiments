@@ -4,11 +4,26 @@ import { CleanPlugin, HotModuleReplacementPlugin } from "webpack";
 import { WebpackManifestPlugin } from "webpack-manifest-plugin";
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import TerserPlugin from "terser-webpack-plugin";
+import CompressionPlugin from "compression-webpack-plugin";
 import LoadablePlugin from "@loadable/webpack-plugin";
+import zlib from "zlib";
 
 const mode = process.env.NODE_ENV || "development";
 
 const emptyFunc = () => {};
+
+const compressSettings: CompressionPlugin.CustomOptions = {
+  filename: "[path][base].br[query]",
+  algorithm: "brotliCompress",
+  test: /\.(js|css|html|svg|jpeg|jpg|gif)$/,
+  compressionOptions: {
+    params: {
+      [zlib.constants.BROTLI_PARAM_QUALITY]: 11,
+    },
+  },
+  threshold: 10240,
+  minRatio: 0.8,
+};
 
 module.exports = () => ({
   mode,
@@ -44,11 +59,11 @@ module.exports = () => ({
     new CleanPlugin(),
     new WebpackManifestPlugin({}),
     mode !== "production" ? new HotModuleReplacementPlugin() : emptyFunc,
-    // mode === 'production' ? new CompressionPlugin() : emptyFunc,
     mode !== "production"
       ? new HtmlWebpackPlugin({ template: "./dev-server-entry/index.html" })
       : emptyFunc,
     new LoadablePlugin(),
+    mode === "production" ? new CompressionPlugin(compressSettings) : emptyFunc,
   ],
   optimization: {
     mangleWasmImports: true,

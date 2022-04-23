@@ -10,10 +10,16 @@ function Home() {
   return (
     <div>
       <p>counter: {count}</p>
-      <button type="button" onClick={() => dispatch(increment())}>
+      <button
+        type='button'
+        onClick={() => {
+          console.log("increment");
+          dispatch(increment());
+        }}
+      >
         increment
       </button>
-      <button type="button" onClick={() => dispatch(decrement())}>
+      <button type='button' onClick={() => dispatch(decrement())}>
         decrement
       </button>
     </div>
