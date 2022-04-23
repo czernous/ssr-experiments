@@ -5,6 +5,7 @@ export interface ServerData {
   queryString: URLSearchParams;
   headers: http.IncomingHttpHeaders;
   method?: string;
+  payload?: any;
 }
 
 export interface Header {

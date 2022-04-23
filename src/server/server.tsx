@@ -1,7 +1,6 @@
 /* eslint-disable no-param-reassign */
 import http from "http";
-import fs from "fs";
-import path from "path";
+import crypto from "node:crypto";
 import React from "react";
 import { renderToPipeableStream } from "react-dom/server";
 import { Provider } from "react-redux";
@@ -16,10 +15,11 @@ import {
   isJsAndNotClient,
 } from "./utils";
 import AssetsController from "./controllers/assetsController";
-import { UrlObject } from "url";
 import { ServerData } from "./interfaces";
 
 const PORT = process.env.PORT || 8000;
+
+const clientNonce = crypto.randomBytes(16).toString("base64");
 
 const parseJsonToObject = function (str) {
   try {
@@ -44,6 +44,7 @@ async function handler(req, res) {
     </Provider>,
     {
       bootstrapScripts: [client],
+      nonce: clientNonce,
       onShellReady() {
         res.statusCode = didError ? 500 : 200;
         res.setHeader("Content-type", "text/html");
@@ -86,35 +87,62 @@ const server = http.createServer((req, res) => {
 
   // Get the payload,if any
   const decoder = new StringDecoder("utf-8");
-  const ssrRoute = routes.find((r) => r.path === req.url);
+  const route = routes.find((r) => r.path === req.url);
+  let buffer = "";
 
-  req.on("data", () => {
+  req.on("data", (data) => {
     console.log("got some data");
-    // if no data is passed we don't see this messagee
-    // but we still need the handler so the "end" function works.
+    buffer += decoder.write(data);
   });
-  req.on("end", () => {
+  req.on("end", async () => {
     // request part is finished... we can send a response now
     console.log("send a response");
-    // we will use the standardized version of the path
 
+    const cspHeaderValues = [
+      "default-src 'self'",
+      `script-src 'self' 'unsafe-inline' 'nonce-${clientNonce}'`,
+      "style-src 'self' 'unsafe-inline'",
+      "img-src 'self'",
+      "font-src 'self'",
+      "connect-src 'self'",
+      "frame-ancestors 'self'",
+      "form-action 'self'",
+      "base-uri 'self'",
+      "manifest-src 'self'",
+      "worker-src 'self'",
+      "child-src 'self'",
+      "block-all-mixed-content",
+      "upgrade-insecure-requests",
+    ].join("; ");
+
+    buffer += decoder.end();
+    res.setHeader("Content-Security-Policy", cspHeaderValues);
     const data: ServerData = {
       trimmedPath,
       queryString: queryStringObject,
       headers,
       method,
+      payload: parseJsonToObject(buffer),
     };
 
     const assetsController = new AssetsController(req, res, data);
 
-    if (req.url === ssrRoute?.path) return handler(req, res);
-    if (isCompressedOrClient(req)) return assetsController.getCompressedAsset();
-    if (isJsAndNotClient(req)) return assetsController.getJavaScriptAsset();
-    return (function () {
-      res.statusCode = 404;
+    try {
+      if (req.url === route?.path) return await handler(req, res);
+      if (isCompressedOrClient(req))
+        return await assetsController.getCompressedAsset();
+      if (isJsAndNotClient(req))
+        return await assetsController.getJavaScriptAsset();
+      return (() => {
+        res.statusCode = 404;
+        res.setHeader("Content-Type", "text/html");
+        res.end("<h1>404 Page not found</h1>");
+      })();
+    } catch (error) {
+      res.statusCode = 500;
       res.setHeader("Content-Type", "text/html");
-      res.end("<h1>404 Page not found</h1>");
-    })();
+      res.end(`<h1>500 Internal server error: ${error}</h1>`);
+    }
   });
 });
 

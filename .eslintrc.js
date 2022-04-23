@@ -49,5 +49,6 @@ module.exports = {
       },
     ],
     "import/no-import-module-exports": 0,
+    "no-unused-expressions": 0,
   },
 };
