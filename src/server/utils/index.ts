@@ -17,3 +17,12 @@ export const findFileByPartialName = (name: string) => {
   const file = files.find((f) => f.includes(name));
   return file as string;
 };
+
+export const parseJsonToObject = function (str: string) {
+  try {
+    const obj = JSON.parse(str);
+    return obj;
+  } catch (e) {
+    return {};
+  }
+};

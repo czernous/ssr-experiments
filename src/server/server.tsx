@@ -13,6 +13,7 @@ import {
   findFileByPartialName,
   isCompressedOrClient,
   isJsAndNotClient,
+  parseJsonToObject,
 } from "./utils";
 import AssetsController from "./controllers/assetsController";
 import { ServerData } from "./interfaces";
@@ -20,15 +21,6 @@ import { ServerData } from "./interfaces";
 const PORT = process.env.PORT || 8000;
 
 const clientNonce = crypto.randomBytes(16).toString("base64");
-
-const parseJsonToObject = function (str) {
-  try {
-    const obj = JSON.parse(str);
-    return obj;
-  } catch (e) {
-    return {};
-  }
-};
 
 async function handler(req, res) {
   let didError = false;
@@ -55,9 +47,7 @@ async function handler(req, res) {
         // Something errored before we could complete the shell so we emit an alternative shell.
         res.statusCode = 500;
         res.send(
-          `<!doctype html><p>Loading...</p><script src="${findFileByPartialName(
-            "client"
-          )}"></script>`
+          `<!doctype html><p>Loading...</p><script src="${client}"></script>`
         );
       },
 
@@ -71,26 +61,17 @@ async function handler(req, res) {
 
 const server = http.createServer((req, res) => {
   const parsedUrl = new URL(req.url!.toString(), "http://localhost:8000");
-
-  // Get the path
   const { pathname } = parsedUrl;
   const trimmedPath = pathname.replace(/^\/+|\/+$/g, "");
-
-  // Get the query string as an object
   const queryStringObject = parsedUrl.searchParams;
-
-  // Get the HTTP method
   const method = req.method?.toLowerCase();
-
-  // Get the headers as an object
   const { headers } = req;
-
-  // Get the payload,if any
   const decoder = new StringDecoder("utf-8");
   const route = routes.find((r) => r.path === req.url);
+
   let buffer = "";
 
-  req.on("data", (data) => {
+  req.on("data", async (data) => {
     console.log("got some data");
     buffer += decoder.write(data);
   });
@@ -128,7 +109,12 @@ const server = http.createServer((req, res) => {
     const assetsController = new AssetsController(req, res, data);
 
     try {
-      if (req.url === route?.path) return await handler(req, res);
+      const isLoggedIn = false;
+      // check if authenticated when accessing adming page - change to real authentication later
+      if (req.url === route?.path)
+        return !route?.protected || isLoggedIn
+          ? await handler(req, res)
+          : res.end("<h1>You are not authorized to access this resource</h1>");
       if (isCompressedOrClient(req))
         return await assetsController.getCompressedAsset();
       if (isJsAndNotClient(req))
