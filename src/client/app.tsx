@@ -3,7 +3,17 @@ import React, { Suspense } from "react";
 import { Link, Route, Routes } from "react-router-dom";
 import routes from "./routes";
 
-function App() {
+function renderInitialState(props: any) {
+  const innerHtml = `window.__APP_DATA__ = ${JSON.stringify(props.appData)}`;
+  return (
+    <script
+      nonce='appData123'
+      dangerouslySetInnerHTML={{ __html: innerHtml }}
+    />
+  );
+}
+
+function App({ ...props }: any) {
   return (
     <>
       <ul>
@@ -25,6 +35,7 @@ function App() {
           })}
         </Routes>
       </Suspense>
+      {renderInitialState(props)}
     </>
   );
 }

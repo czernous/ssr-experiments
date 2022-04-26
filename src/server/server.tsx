@@ -24,24 +24,44 @@ const clientNonce = crypto.randomBytes(16).toString("base64");
 
 async function handler(req, res) {
   let didError = false;
+
   const store = createStore(); // add real reducer
   const client = findFileByPartialName("client");
-  console.log(client);
+  console.log(clientNonce);
+
+  const assets = {
+    client: {
+      path: client,
+      nonce: clientNonce,
+    },
+  };
+
+  const appData = {
+    title: "React SSR" + " - " + req.url,
+  };
 
   const stream = renderToPipeableStream(
     <Provider store={store}>
       <StaticRouter location={req.url}>
-        <App />
+        <App assets={assets} appData={JSON.stringify(appData)} />
       </StaticRouter>
     </Provider>,
     {
-      bootstrapScripts: [client],
+      bootstrapScripts: [assets.client.path],
       nonce: clientNonce,
       onShellReady() {
         res.statusCode = didError ? 500 : 200;
         res.setHeader("Content-type", "text/html");
-        res.write('<div id="root">'); // add div root for react
+        res.write(`    <html lang='en'>
+        <head>
+          <meta charSet='utf-8' />
+          <meta name='viewport' content='width=device-width, initial-scale=1' />
+          <link rel='shortcut icon' href='favicon.ico' />
+          <title>${appData.title}</title>
+        </head>
+        <body><div id="root">`); // add div root for react
         stream.pipe(res);
+        res.write(`</div></body></html>`);
       },
       onShellError(error) {
         // Something errored before we could complete the shell so we emit an alternative shell.
@@ -81,7 +101,7 @@ const server = http.createServer((req, res) => {
 
     const cspHeaderValues = [
       "default-src 'self'",
-      `script-src 'self' 'unsafe-inline' 'nonce-${clientNonce}'`,
+      `script-src 'self' 'unsafe-inline' 'nonce-${clientNonce}' 'nonce-appData123'`,
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self'",
       "font-src 'self'",
@@ -109,7 +129,7 @@ const server = http.createServer((req, res) => {
     const assetsController = new AssetsController(req, res, data);
 
     try {
-      const isLoggedIn = false;
+      const isLoggedIn = true;
       // check if authenticated when accessing adming page - change to real authentication later
       if (req.url === route?.path)
         return !route?.protected || isLoggedIn
