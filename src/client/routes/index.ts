@@ -14,6 +14,10 @@ const Admin = loadable(
   { ssr: false }
 );
 
+const NotFoundError = React.lazy(
+  () => import(/* webpackChunkName: "pages-404" */ "../pages/404")
+);
+
 export default [
   {
     path: "/",
@@ -32,5 +36,11 @@ export default [
     element: Admin,
     exact: true,
     protected: true,
+  },
+  {
+    path: "*",
+    element: NotFoundError,
+    exact: true,
+    protected: false,
   },
 ];

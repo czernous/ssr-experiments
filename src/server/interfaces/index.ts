@@ -1,6 +1,6 @@
 import http from "http";
 
-export interface ServerData {
+export interface IServerData {
   trimmedPath: string;
   queryString: URLSearchParams;
   headers: http.IncomingHttpHeaders;
@@ -8,7 +8,14 @@ export interface ServerData {
   payload?: any;
 }
 
-export interface Header {
+export interface IHeader {
   key: string;
   value: string;
+}
+
+export interface ISsrProps {
+  res: http.ServerResponse;
+  req: http.IncomingMessage;
+  data: IServerData;
+  statusCode?: number;
 }

@@ -4,7 +4,7 @@ import http from "http";
 import path from "path";
 import fs from "fs";
 import { findFileByPartialName, staticFolder } from "../../utils";
-import { Header, ServerData } from "../../interfaces";
+import { IHeader, IServerData } from "../../interfaces";
 import RouteController from "../routeController";
 
 class AssetsController extends RouteController {
@@ -13,7 +13,7 @@ class AssetsController extends RouteController {
   constructor(
     protected req: http.IncomingMessage,
     protected res: http.ServerResponse,
-    protected data: ServerData
+    protected data: IServerData
   ) {
     super(req, res, data);
     AssetsController._instance = this;
@@ -21,13 +21,10 @@ class AssetsController extends RouteController {
 
   hasCacheHeader = true;
 
-  private async getAsset(header: Header, file: string): Promise<void> {
+  private async getAsset(header: IHeader, file: string): Promise<void> {
     const { res, data } = this;
     if (data.method?.toUpperCase() === "GET") {
-      res.setHeader(header.key, header.value);
-      this.hasCacheHeader
-        ? res.setHeader("Cache-Control", "public, max-age=31536000")
-        : null;
+      this.hasCacheHeader ? this.setCache(header, res) : null;
       res.writeHead(200);
       const rs = fs.createReadStream(path.join(staticFolder, file));
       rs.pipe(res);
@@ -42,7 +39,7 @@ class AssetsController extends RouteController {
       findFileByPartialName(`${this.data.trimmedPath}.br`) ??
       findFileByPartialName(`${this.data.trimmedPath}`);
 
-    const header: Header = {
+    const header: IHeader = {
       key: "Content-Encoding",
       value: `${foundAsset.includes(".br") ? "br" : ""}`,
     };
@@ -51,7 +48,7 @@ class AssetsController extends RouteController {
   }
 
   public async getJavaScriptAsset(): Promise<void> {
-    const header: Header = {
+    const header: IHeader = {
       key: "Content-Type",
       value: "application/javascript",
     };

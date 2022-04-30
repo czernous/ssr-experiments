@@ -9,7 +9,7 @@ function Admin() {
   return (
     <div>
       {/* @ts-ignore */}
-      <h1>This is an admin page {window.__APP_DATA__}</h1>
+      <h1>This is an admin page </h1>
       <p>count: {count}</p>
     </div>
   );

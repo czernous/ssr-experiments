@@ -1,5 +1,5 @@
 /* eslint-disable no-underscore-dangle */
-import React from "react";
+import React, { Suspense } from "react";
 import { hydrateRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { Provider } from "react-redux";
@@ -16,11 +16,12 @@ delete window.__STATE__;
 
 hydrateRoot(
   document.getElementById("root") as HTMLDivElement,
-  <React.StrictMode>
-    <Provider store={store}>
-      <BrowserRouter>
+
+  <Provider store={store}>
+    <BrowserRouter>
+      <Suspense fallback={<div>loading...</div>}>
         <App />
-      </BrowserRouter>
-    </Provider>
-  </React.StrictMode>
+      </Suspense>
+    </BrowserRouter>
+  </Provider>
 );
