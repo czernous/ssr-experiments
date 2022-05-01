@@ -45,7 +45,7 @@ const renderCilent = async ({ ...props }: ISsrProps) => {
         props.res.setHeader("Content-type", "text/html");
         // add div root for react
         props.res.write(
-          `<html lang="en"><head><title>REACT SSR APP | ${props.req.url}</title></head><div id="root">`
+          `<!DOCTYPE html><html lang="en"><head><title>REACT SSR APP | ${props.req.url}</title></head><div id="root">`
         );
         stream.pipe(props.res);
 

@@ -27,12 +27,11 @@ function App({ ...props }: any) {
   const location = useLocation();
   const route = `REACT SSR | ${location.pathname}`;
 
-  startTransition(() => {
-    useEffect(() => {
-      dispatch(updateTitle({ title: route }));
-      document.querySelector("title")!.innerText = data;
-    }, [data]);
-  });
+  useEffect(() => {
+    dispatch(updateTitle({ title: route }));
+    document.querySelector("title")!.innerText = data;
+  }, [data]);
+
   return (
     <>
       <ul>

@@ -19,7 +19,7 @@ hydrateRoot(
 
   <Provider store={store}>
     <BrowserRouter>
-      <Suspense fallback={<div>loading...</div>}>
+      <Suspense fallback={<h1>loading...</h1>}>
         <App />
       </Suspense>
     </BrowserRouter>
