@@ -1,6 +1,6 @@
 /* eslint-disable class-methods-use-this */
 import http from "http";
-import { IHeader, IServerData } from "../../interfaces";
+import { IServerData } from "../../interfaces";
 
 abstract class RouteController {
   constructor(
@@ -15,8 +15,7 @@ abstract class RouteController {
 
   static hasCacheHeader: boolean;
 
-  setCache(header: IHeader, res: http.ServerResponse) {
-    res.setHeader(header.key, header.value);
+  setCache(res: http.ServerResponse) {
     res.setHeader("Cache-Control", "public, max-age=31536000");
   }
 }

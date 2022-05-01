@@ -43,6 +43,7 @@ const renderCilent = async ({ ...props }: ISsrProps) => {
         props.res.statusCode = didError ? 500 : code;
 
         props.res.setHeader("Content-type", "text/html");
+        props.res.setHeader("Cache-Control", "public, max-age=31536000");
         // add div root for react
         props.res.write(
           `<!DOCTYPE html><html lang="en"><head><title>REACT SSR APP | ${props.req.url}</title></head><div id="root">`

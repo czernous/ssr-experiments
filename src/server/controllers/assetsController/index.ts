@@ -21,10 +21,30 @@ class AssetsController extends RouteController {
 
   hasCacheHeader = true;
 
-  private async getAsset(header: IHeader, file: string): Promise<void> {
+  private contentTypes = {
+    js: "application/javascript",
+    pdf: "application/pdf",
+    css: "text/css",
+    html: "text/html",
+    woff: "font/woff",
+    ttf: "font/ttf",
+    otf: "font/otf",
+    jpeg: "image/jpeg",
+    jpg: "image/jpg",
+    avif: "image/avif",
+    gif: "image/gif",
+    png: "image/png",
+    svg: "image/svg+xml",
+    webp: "image/webp",
+  };
+
+  private async getAsset(headers: IHeader[], file: string): Promise<void> {
     const { res, data } = this;
     if (data.method?.toUpperCase() === "GET") {
-      this.hasCacheHeader ? this.setCache(header, res) : null;
+      headers.forEach((header) => {
+        if (header.key.length) res.setHeader(header.key, header.value);
+      });
+      this.hasCacheHeader ? this.setCache(res) : null;
       res.writeHead(200);
       const rs = fs.createReadStream(path.join(staticFolder, file));
       rs.pipe(res);
@@ -34,25 +54,26 @@ class AssetsController extends RouteController {
     }
   }
 
-  public async getCompressedAsset(): Promise<void> {
+  public async serveAsset(): Promise<void> {
     const foundAsset =
       findFileByPartialName(`${this.data.trimmedPath}.br`) ??
       findFileByPartialName(`${this.data.trimmedPath}`);
 
-    const header: IHeader = {
-      key: "Content-Encoding",
+    const assetNameArr = foundAsset.split(".");
+    const encodingHeader: IHeader = {
+      key: foundAsset.includes("br") ? "Content-Encoding" : "",
       value: `${foundAsset.includes(".br") ? "br" : ""}`,
     };
 
-    this.getAsset(header, foundAsset);
-  }
-
-  public async getJavaScriptAsset(): Promise<void> {
-    const header: IHeader = {
+    const contentTypeHeader: IHeader = {
       key: "Content-Type",
-      value: "application/javascript",
+      value:
+        encodingHeader.value === "br"
+          ? this.contentTypes[assetNameArr[assetNameArr.length - 2]]
+          : this.contentTypes[assetNameArr[assetNameArr.length - 1]],
     };
-    this.getAsset(header, this.data.trimmedPath);
+
+    await this.getAsset([encodingHeader, contentTypeHeader], foundAsset);
   }
 }
 

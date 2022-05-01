@@ -4,7 +4,7 @@ import routes from "../../client/routes";
 import initControllers from "../controllers";
 import { IServerData } from "../interfaces";
 import renderCilent from "../render";
-import { isCompressedOrClient, isJsAndNotClient } from "../utils";
+import { isAsset } from "../utils";
 import logger from "../utils/logger";
 
 class Router {
@@ -27,21 +27,15 @@ class Router {
       const isLoggedIn = false;
       logger.info(`Route ${req.url} was activated`, "Router:on(activate)");
 
-      // if (req.url === clientRoute?.path) // add some logic to handle non-client routes
-      if (isCompressedOrClient(req))
-        return await assetsController.getCompressedAsset();
-      if (isJsAndNotClient(req))
-        return await assetsController.getJavaScriptAsset();
 
-      //
+      if (isAsset(req)) return await assetsController.serveAsset();
+
       return !clientRoute?.protected || isLoggedIn // check if authenticated when accessing admin page - change to real authentication later
         ? await renderCilent({ req, res, data })
         : res.end("<h1>You are not authorized to access this resource</h1>");
-      // return (async () => {
-      //   return renderCilent({ req, res, data });
-      // })();
+
     } catch (error) {
-      logger.error(error as string, "Router:on(init)");
+      logger.error(error as string, "Router:on(activate)");
       res.statusCode = 500;
       res.setHeader("Content-Type", "text/html");
       res.end(`<h1>500 Internal server error: ${error}</h1>`);

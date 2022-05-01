@@ -15,7 +15,7 @@ const emptyFunc = () => {};
 const compressSettings: CompressionPlugin.CustomOptions = {
   filename: "[path][base].br[query]",
   algorithm: "brotliCompress",
-  test: /\.(js|css|html|svg|jpeg|jpg|gif)$/,
+  test: /\.(js|css|html|svg|jpeg|jpg|gif|png|webp|pdf|tiff|woff|otf)$/,
   compressionOptions: {
     params: {
       [zlib.constants.BROTLI_PARAM_QUALITY]: 11,

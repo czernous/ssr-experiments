@@ -5,13 +5,12 @@ import crypto from "node:crypto";
 
 export const staticFolder = path.join(__dirname, "static");
 
-export const isCompressedOrClient = (req: http.IncomingMessage): boolean =>
+export const isAsset = (req: http.IncomingMessage): boolean =>
   req.url?.includes(".br") ||
-  req.url?.includes("client" || /\.(css|html|svg|jpeg|jpg|gif)$/) ||
+  /\.(js|css|html|svg|jpeg|jpg|gif|png|webp|pdf|tiff|woff|otf)$/.test(
+    req.url
+  ) ||
   false;
-
-export const isJsAndNotClient = (req: http.IncomingMessage): boolean =>
-  (req.url?.includes(".js") && !req.url?.includes("client")) || false;
 
 export const findFileByPartialName = (name: string) => {
   const files = fs.readdirSync(staticFolder);
