@@ -5,9 +5,9 @@
   "main": "dist/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "format:test": "prettier \"src/**/*.{ts,html,md,scss, json}\" --list-different",
-    "format:write": "prettier \"src/**/*.{ts,html,md,scss, json}\" --write",
-    "lint": "eslint \"src/**/*.{ts,html,md,scss, json}\" --fix && npm run format:write",
+    "format:test": "prettier \"src/**/*.{ts,tsx,html,md,scss,json}\" --list-different",
+    "format:write": "prettier \"src/**/*.{ts,tsx,html,md,scss,json}\" --write",
+    "lint": "eslint \"src/**/*.{ts,tsx,html,md,scss,json}\" --fix && npm run format:write",
     "hmr:client": "cross-env NODE_ENV=development webpack serve --config webpack.config.client.ts --mode=development",
     "dev:build-client": "cross-env NODE_ENV=development webpack --config webpack.config.client.ts --mode=development -w",
     "dev:build-server": "cross-env NODE_ENV=development webpack --config webpack.config.server.ts --mode=development -w",
@@ -37,6 +37,7 @@
     "@types/node": "^17.0.25",
     "@types/react": "^18.0.5",
     "@types/react-dom": "^18.0.1",
+    "@types/react-helmet": "^6.1.5",
     "@types/webpack": "^5.28.0",
     "@types/webpack-env": "^1.16.3",
     "@types/webpack-manifest-plugin": "^3.0.5",
@@ -74,6 +75,7 @@
     "@reduxjs/toolkit": "^1.8.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
+    "react-helmet": "^6.1.0",
     "react-redux": "^8.0.0",
     "react-router-dom": "^6.3.0"
   }

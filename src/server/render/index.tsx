@@ -1,21 +1,19 @@
+/* eslint-disable jsx-a11y/html-has-lang */
+/* eslint-disable react/prop-types */
+/* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable no-param-reassign */
 
 import { renderToPipeableStream } from "react-dom/server";
 import { Provider } from "react-redux";
 import React, { Suspense } from "react";
 import { StaticRouter } from "react-router-dom/server";
+import Helmet from "react-helmet";
 
-import { ChunkExtractor } from "@loadable/server";
-import path from "path";
 import { createStore } from "../../redux/store";
 import { findFileByPartialName, nonces } from "../utils";
 import App from "../../client/app";
 import logger from "../utils/logger";
 import { ISsrProps } from "../interfaces";
-
-const staticFolder = path.join(__dirname, "static");
-const statsFile = path.join(staticFolder, "/loadable-stats.json");
-const extractor = new ChunkExtractor({ statsFile });
 
 const renderCilent = async ({ ...props }: ISsrProps) => {
   let didError = false;
@@ -25,15 +23,35 @@ const renderCilent = async ({ ...props }: ISsrProps) => {
   const assets = {
     client,
   };
+  const helmet = Helmet.renderStatic();
+  function HTML() {
+    const htmlAttrs = helmet.htmlAttributes.toComponent();
+    const bodyAttrs = helmet.bodyAttributes.toComponent();
+
+    return (
+      <html {...htmlAttrs}>
+        <head>
+          {helmet.title.toComponent()}
+          {helmet.meta.toComponent()}
+          {helmet.link.toComponent()}
+        </head>
+        <body {...bodyAttrs}>
+          <div id='root'>
+            <Suspense fallback={<h1>Loading...</h1>}>
+              <Provider store={store}>
+                <StaticRouter location={props.req.url as string}>
+                  <App assets={assets} data={props.data} />
+                </StaticRouter>
+              </Provider>
+            </Suspense>
+          </div>
+        </body>
+      </html>
+    );
+  }
 
   const stream = renderToPipeableStream(
-    <Suspense fallback={<h1>Loading...</h1>}>
-      <Provider store={store}>
-        <StaticRouter location={props.req.url as string}>
-          <App assets={assets} data={props.data} />
-        </StaticRouter>
-      </Provider>
-    </Suspense>,
+    <HTML />,
 
     {
       bootstrapScripts: [assets.client],
@@ -41,9 +59,9 @@ const renderCilent = async ({ ...props }: ISsrProps) => {
       onShellReady() {
         props.res.statusCode = didError ? 500 : 200;
         props.res.setHeader("Content-type", "text/html");
-        props.res.write(
-          `<!DOCTYPE html><html lang="en"><head><title>REACT SSR APP | ${props.req.url}</title></head><div id="root">`
-        );
+
+        console.log(helmet.title.toComponent());
+
         stream.pipe(props.res);
 
         const state = store.getState();
@@ -58,6 +76,7 @@ const renderCilent = async ({ ...props }: ISsrProps) => {
         );
       },
 
+      // eslint-disable-next-line no-unused-vars
       onShellError(error) {
         // Something errored before we could complete the shell so we emit an alternative shell.
         props.res.statusCode = 500;

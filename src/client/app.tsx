@@ -1,12 +1,13 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable react/no-array-index-key */
 /* eslint-disable react/no-unstable-nested-components */
-import React, { startTransition, Suspense, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React from "react";
+// import { useDispatch, useSelector } from "react-redux";
 
-import { Link, Route, Routes, useLocation } from "react-router-dom";
-import { updateTitle } from "../redux/reducers/app-data";
-import { RootState } from "../redux/reducers/rootReducer";
+import { Link, Route, Routes } from "react-router-dom";
 
-import Html from "./components/Html";
+// import { RootState } from "../redux/reducers/rootReducer";
+
 import routes from "./routes";
 
 // function renderInitialState(props: any) {
@@ -22,15 +23,9 @@ import routes from "./routes";
 
 function App({ ...props }: any) {
   // dispatch(updateTitle(d.title));
-  const data = useSelector((state: RootState) => state.appData.title);
-  const dispatch = useDispatch();
-  const location = useLocation();
-  const route = `REACT SSR | ${location.pathname}`;
-
-  useEffect(() => {
-    dispatch(updateTitle({ title: route }));
-    document.querySelector("title")!.innerText = data;
-  }, [data]);
+  // const data = useSelector((state: RootState) => state.appData.title);
+  // const dispatch = useDispatch();
+  // const location = useLocation();
 
   return (
     <>
@@ -47,7 +42,7 @@ function App({ ...props }: any) {
           function C({ ...data }: any) {
             return <routeProps.element />;
           }
-          // eslint-disable-next-line react/no-array-index-key
+
           return (
             <Route
               key={idx}
