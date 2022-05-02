@@ -27,7 +27,7 @@ const renderCilent = async ({ ...props }: ISsrProps) => {
   };
 
   const stream = renderToPipeableStream(
-    <Suspense>
+    <Suspense fallback={<h1>Loading...</h1>}>
       <Provider store={store}>
         <StaticRouter location={props.req.url as string}>
           <App assets={assets} data={props.data} />
@@ -39,12 +39,8 @@ const renderCilent = async ({ ...props }: ISsrProps) => {
       bootstrapScripts: [assets.client],
       nonce: nonces.clientNonce,
       onShellReady() {
-        const code = props.statusCode ?? 200;
-        props.res.statusCode = didError ? 500 : code;
-
+        props.res.statusCode = didError ? 500 : 200;
         props.res.setHeader("Content-type", "text/html");
-        props.res.setHeader("Cache-Control", "public, max-age=31536000");
-        // add div root for react
         props.res.write(
           `<!DOCTYPE html><html lang="en"><head><title>REACT SSR APP | ${props.req.url}</title></head><div id="root">`
         );

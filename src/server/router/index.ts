@@ -27,13 +27,11 @@ class Router {
       const isLoggedIn = false;
       logger.info(`Route ${req.url} was activated`, "Router:on(activate)");
 
-
       if (isAsset(req)) return await assetsController.serveAsset();
 
       return !clientRoute?.protected || isLoggedIn // check if authenticated when accessing admin page - change to real authentication later
         ? await renderCilent({ req, res, data })
         : res.end("<h1>You are not authorized to access this resource</h1>");
-
     } catch (error) {
       logger.error(error as string, "Router:on(activate)");
       res.statusCode = 500;
